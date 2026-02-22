@@ -1,73 +1,47 @@
-# React + TypeScript + Vite
+# Protel Client (Frontend Web App)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the React / Vite frontend application for the Protel Automated APD (Personal Protective Equipment) and Liveness Verification System.
 
-Currently, two official plugins are available:
+It serves as the main dashboard for security personnel or admin users to manage workers and view real-time detection logs. It also provides the active scanner user interface for real-time Face Recognition, Liveness (Blink Detection), and PPE compliance checks.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Architecture & Technology Stack
 
-## React Compiler
+- **Framework**: React 18, built with Vite
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS & `shadcn/ui` components
+- **Routing**: React Router DOM
+- **Icons**: Lucide React
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Key Features
 
-## Expanding the ESLint configuration
+- **Dashboard Overview**: Displays total detected violations, compliance rates, and recent worker scans.
+- **Attendance Scanner (`/absensi`)**: Connects to the device camera directly. Guides workers through:
+  1. _Liveness Challenge_: Prompts the worker to blink 3 times using Text-to-Speech (TTS).
+  2. _Face Recognition_: Identifies the worker.
+  3. _PPE Check_: Sequentially asks for Helmet, Vest, Gloves, and Boots.
+- **Worker Management (`/pekerja`)**: Dashboard to create, read, update, and delete worker profiles, including taking base64 reference photos for face recognition matching.
+- **Role Management (`/jabatan`)**: Configure job titles.
+- **CCTV Live View (`/camera`)**: Subscribes to backend WebSocket streams to display real-time RTSP camera feeds that are constantly running AI detection.
+- **Violations Log (`/pelanggaran`)**: Detailed table and reporting of any captured non-compliant records.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js LTS (v18+)
+- Backend Node Express Server running (typically on `http://localhost:5005`)
+- A Python `uvicorn` instance running the computer vision microservice (typically deployed on a cloud/VPS).
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Running Locally
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Install Dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the Development Server:
+   ```bash
+   npm run dev
+   ```
+3. Open `http://localhost:5173` in your browser.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Configuration
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+The `vite.config.ts` handles proxying requests containing `/api` to the backend Express server running on port `5005` to avoid CORS issues during active development.
